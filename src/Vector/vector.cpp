@@ -44,3 +44,28 @@ void Vector::rotate(double angle)
 
     return;
 }
+
+double Vector::getAngle(Vector &vec)
+{
+    double LengthMul = std::sqrt(this->getLenSq() * vec.getLenSq());
+
+    return (*this * vec) / LengthMul;
+}
+
+std::ostream & operator<<(std::ostream &os, const Vector &vec)
+{
+    os << "x = " << vec.x_ << ", y = " << vec.y_ << ", z = " << vec.z_ << ", length = "
+       << vec.length_ << std::endl;
+    
+    return os;
+}
+
+
+void Vector::normolize()
+{
+    double length = std::sqrt(getLenSq());
+
+    x_ /= length;
+    y_ /= length;
+    z_ /= length;
+}

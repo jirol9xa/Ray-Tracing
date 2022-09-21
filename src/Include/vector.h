@@ -1,9 +1,11 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include "basis.h"
 #include <SFML/Graphics.hpp>
 #include <cmath>
+#include <istream>
+#include "basis.h"
+
 
 class Vector
 {
@@ -30,7 +32,7 @@ public:
     double setY(double y);
     double setZ(double z);
 
-    double getLen() 
+    double getLenSq() 
     {
         if (length_ < 0)
             length_ = x_*x_ + y_*y_ + z_*z_;
@@ -38,17 +40,22 @@ public:
         return length_;
     }
 
+    void normolize();
     void rotate(double angle);
+    double getAngle(Vector &vec);
 
-    friend const Vector operator*(double coef, const Vector &vec);
+    friend Vector operator*(double coef, const Vector &vec);
+    friend std::ostream & operator<<(std::ostream &os, const Vector &vec);
 
-    const Vector & operator=(const Vector &&vec);
-    const Vector & operator=(const Vector &vec);
-    const Vector   operator+(const Vector &vec);
-    const Vector   operator-(const Vector &vec);
-    const Vector   operator&(const Vector &vec);
-    const Vector   operator*(double coef);
-    const Vector   operator-();
+    const  Vector & operator=(const Vector &&vec);
+    const  Vector & operator=(const Vector &vec);
+           Vector   operator+(const Vector &vec);
+           Vector   operator-(const Vector &vec);
+           Vector   operator&(const Vector &vec);
+           Vector   operator%(const Vector &vec);
+           Vector   operator/(double coef);
+           Vector   operator*(double coef);
+           Vector   operator-();
 
     double operator*(const Vector &arg);
 
@@ -79,7 +86,7 @@ inline const Vector & Vector::operator=(const Vector &vec)
     return *this;
 }
 
-inline const Vector Vector::operator*(double coef)
+inline Vector Vector::operator*(double coef)
 {
     return Vector(x_ * coef, y_ * coef, z_ * coef);
 }
@@ -90,12 +97,12 @@ inline double Vector::operator*(const Vector &vec)
 }
 
 
-inline const Vector operator*(double coef, const Vector &vec)
+inline Vector operator*(double coef, const Vector &vec)
 {
     return Vector(vec.x_ * coef, vec.y_ * coef, vec.z_ * coef);
 }
 
-inline const Vector Vector::operator+(const Vector &arg)
+inline Vector Vector::operator+(const Vector &arg)
 {
     return Vector(x_ + arg.x_, y_ + arg.y_, z_ + arg.z_);
 }
@@ -113,23 +120,28 @@ inline void Vector::operator+=(const Vector &arg)
     length_ = -1;
 }
 
-inline const Vector Vector::operator-(const Vector &arg)
+inline Vector Vector::operator-(const Vector &arg)
 {
     return Vector(x_ - arg.x_, y_ - arg.y_, z_ - arg.z_);
 }
 
-inline const Vector Vector::operator-()
+inline Vector Vector::operator-()
 {
     return (-1) * (*this);
 }
 
-inline const Vector Vector::operator&(const Vector &vec)
+inline Vector Vector::operator&(const Vector &vec)
 {
     double x2 = vec.x_,
            y2 = vec.y_,
            z2 = vec.z_; 
     
     return Vector(y_ * z2 - z_ * y2, z_ * x2 - x_ * z2, x_ * y2 - y_ * x2);
+}
+
+inline Vector Vector::operator%(const Vector &vec)
+{
+    return Vector(x_ * vec.x_, y_ * vec.y_, z_ * vec.z_);
 }
 
 inline void Vector::operator-=(const Vector &arg)
@@ -143,6 +155,11 @@ inline void Vector::operator-=(const Vector &arg)
     z_ += arg.z_;
 
     length_ = -1;
+}
+
+inline Vector Vector::operator/(double coef)
+{
+    return this->operator*(1 / coef);
 }
 
 inline void Vector::operator*=(double coef)

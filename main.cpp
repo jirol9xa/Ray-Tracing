@@ -1,39 +1,39 @@
+#include <SFML/Graphics.hpp>
+#include <iostream>
 #include "render.h"
 #include "vector.h"
 #include "videoSettings.h"
-#include <SFML/Graphics.hpp>
-#include <iostream>
+#include "sphere.h"
+
 
 int main() {
-  using namespace Settings;  
+    using namespace Settings;  
 
-  sf::RenderWindow window(sf::VideoMode(Width, Heigth), "Vectors");
-  Render sfml_window(&window);
-  sf::Clock clock;
+    sf::RenderWindow window(sf::VideoMode(Width, Heigth), "Vectors");
+    Render render(&window);
+    Sphere sphere;
+    Basis basis;
+    sf::Clock clock;
+    Vector Light(10, 25, 20);
+    Vector Eye(0, 14, 15);
 
-  Vector vec2(2, 3);
-  vec2.setX(8);
-  vec2 += {-3, 3};
+    while (window.isOpen()) 
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+            if (event.type == sf::Event::Closed)
+                window.close();
 
-  while (window.isOpen()) {
-    sf::Event event;
-    while (window.pollEvent(event))
-      if (event.type == sf::Event::Closed)
-        window.close();
+        sphere.makeSphere(basis, Light, Eye);
+        //Light.rotate(0.2);
 
-    if (clock.getElapsedTime().asMilliseconds() >= 10) {
-      vec2.rotate(-0.02);
-      clock.restart();
+        render.draw(sphere.getPixels());
+
+        window.display();
+        window.clear();
+
+        //std::cout << "New frame\n";
     }
-
-    sfml_window.draw(vec2);
-
-    // vec2.draw();
-    // vec3.draw();
-
-    window.display();
-    window.clear();
-  }
 
   return 0;
 }

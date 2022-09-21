@@ -14,3 +14,16 @@ void Render::draw(Vector &vec) const
     };
     window_->draw(mainLine, 2, sf::Lines);
 }
+
+void Render::draw(const uint32_t *array) const
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+        window_->close();
+
+    sf::Texture texture;
+    texture.create(Settings::Width, Settings::Heigth);
+    sf::Sprite sprite(texture);
+
+    texture.update((const uint8_t *) array);
+    window_->draw(sprite);
+}
