@@ -150,9 +150,9 @@ inline void Vector::operator-=(const Vector &arg)
            old_y = y_,
            old_z = z_;
 
-    x_ += arg.x_;
-    y_ += arg.y_;
-    z_ += arg.z_;
+    x_ -= arg.x_;
+    y_ -= arg.y_;
+    z_ -= arg.z_;
 
     length_ = -1;
 }

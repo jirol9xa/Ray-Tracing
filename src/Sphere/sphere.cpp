@@ -32,24 +32,24 @@ void Sphere::makeSphere(Basis &basis, const Vector &Lamp, const Vector &View)
             Vector Eye(View_l.getX() - x, View_l.getY() - y, View_l.getZ() - z);
             Vector Color;
 
-
-            Vector ReflectedRay =  Ray * (3 * (Normal * Ray) - 2);
-
-            double AlAngle = ReflectedRay.getAngle(Eye);
-            if (AlAngle < 0)
-                AlAngle = 0;
             double FiAngle = Ray.getAngle(Normal);
             if (FiAngle < 0)
                 FiAngle = 0;
 
-            Color = ((LightColor % Color_  * ((std::pow(FiAngle, 3) * 2 +  0.2)) / 255) +
-                      LightColor * std::pow(AlAngle, 5) * 0.01) / 255; 
+            Vector ReflectedRay =  2 * FiAngle * Normal - Ray;
 
-            if (Color.getX() > 1)      Color.setX(1);
+            double AlAngle = ReflectedRay.getAngle(Eye);
+            if (AlAngle < 0)
+                AlAngle = 0;
+
+            Color = ((LightColor % Color_  * ((FiAngle * 0.8  +  0.2)) / 255) +
+                      LightColor * std::pow(AlAngle, 25) * 5) / 255; 
+
+            if      (Color.getX() > 1) Color.setX(1);
             else if (Color.getX() < 0) Color.setX(0);
-            if (Color.getY() > 1)      Color.setY(1);
+            if      (Color.getY() > 1) Color.setY(1);
             else if (Color.getY() < 0) Color.setY(0);
-            if (Color.getZ() > 1)      Color.setZ(1);
+            if      (Color.getZ() > 1) Color.setZ(1);
             else if (Color.getZ() < 0) Color.setZ(0);
 
             Pixels_[x] = 0xFF000000 + (int(Color.getX() * 255.0) << 16) + 
@@ -77,4 +77,9 @@ void Sphere::makePositiveVec(Vector &vec)
     Coord = vec.getZ();
     if (Coord < 0)
         vec.setZ(Coord);
+}
+
+void Sphere::setColor(const Vector &vec)
+{
+    Color_ = vec;
 }

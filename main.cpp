@@ -12,10 +12,11 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(Width, Heigth), "Vectors");
     Render render(&window);
     Sphere sphere;
+    sphere.setColor({0, 255, 255});
     Basis basis;
     sf::Clock clock;
-    Vector Light(10, 25, 20);
-    Vector Eye(0, 14, 15);
+    Vector Light(20, 20, 20);
+    Vector Eye(-20, -20, 15);
 
     while (window.isOpen()) 
     {
@@ -25,14 +26,17 @@ int main() {
                 window.close();
 
         sphere.makeSphere(basis, Light, Eye);
-        //Light.rotate(0.2);
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))     Light -= {0, 2, 0};
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))   Light += {0, 2, 0};
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))  Light += {2, 0, 0};
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))   Light -= {2, 0, 0};
+
 
         render.draw(sphere.getPixels());
 
         window.display();
         window.clear();
-
-        //std::cout << "New frame\n";
     }
 
   return 0;

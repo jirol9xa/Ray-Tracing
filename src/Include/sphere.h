@@ -11,7 +11,10 @@ private:
     Vector Color_;
 public:
     Sphere(uint32_t *Pixels, int radius = 50) : 
-        Pixels_(Pixels), Radius_(radius) {} 
+        Pixels_(Pixels), Radius_(radius)
+    {
+        Color_ = {255, 255, 255};
+    } 
     Sphere(int radius = 50) : Radius_(radius) 
     { 
         Color_ = {255, 255, 255};
@@ -21,7 +24,7 @@ public:
     ~Sphere() { delete [] Pixels_; }
 
     void makeSphere(Basis &basis, const Vector &Lamp, const Vector &View);
-
+    void setColor(const Vector &vec);
     const uint32_t *getPixels() { return Pixels_; }
 
 private:
