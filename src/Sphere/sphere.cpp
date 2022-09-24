@@ -17,7 +17,7 @@ void Sphere::makeSphere(Basis &basis, const Vector &Lamp, const Vector &View)
     View_l *= Scale;
     Vector Light = Lamp;
     Light *= Scale;
-    Vector LightColor(255, 255, 255);
+    Vector LightColor(0xCB, 0xC0, 0xFF);
 
     for (int y = 0; y < Heigth; ++y, Pixels_ += Width)
         for (int x = 0; x < Width; ++x)

@@ -12,7 +12,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(Width, Heigth), "Vectors");
     Render render(&window);
     Sphere sphere;
-    sphere.setColor({0, 255, 255});
+    sphere.setColor({0xCB, 0xC0, 0xFF});
     Basis basis;
     sf::Clock clock;
     Vector Light(20, 20, 20);
