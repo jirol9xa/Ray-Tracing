@@ -30,7 +30,7 @@ double Vector::setZ(double z)
     return temp;
 }
 
-void Vector::rotate(double angle)
+void Vector::Kernel::rotate(double angle)
 {
     double sin = std::sin(angle),
            cos = std::cos(angle);
