@@ -3,16 +3,15 @@
 #include <iostream>
 #include "vector.h"
 
-double Vector::setX(double x)
+double VectorKernel::setX(double x)
 {
     double old_x = x_;
     x_ = x;
-    length_ = -1;
 
     return old_x;
 }
 
-double Vector::setY(double y)
+double VectorKernel::setY(double y)
 {
     double old_y = y_;
     y_ = y;
@@ -21,7 +20,7 @@ double Vector::setY(double y)
     return old_y;    
 }
 
-double Vector::setZ(double z)
+double VectorKernel::setZ(double z)
 {
     double temp = z_;
     z_ = z;
@@ -30,7 +29,7 @@ double Vector::setZ(double z)
     return temp;
 }
 
-void Vector::Kernel::rotate(double angle)
+void VectorKernel::rotate(double angle)
 {
     double sin = std::sin(angle),
            cos = std::cos(angle);
@@ -52,16 +51,16 @@ double Vector::getAngle(Vector &vec)
     return (*this * vec) / LengthMul;
 }
 
-std::ostream & operator<<(std::ostream &os, const Vector &vec)
+std::ostream & operator<<(std::ostream &os, Vector &vec)
 {
-    os << "x = " << vec.x_ << ", y = " << vec.y_ << ", z = " << vec.z_ << ", length = "
-       << vec.length_ << std::endl;
+    os << "x = " << vec.getX() << ", y = " << vec.getY() << ", z = " 
+       << vec.getZ() << ", length = " << vec.getLenSq() << std::endl;
     
     return os;
 }
 
 
-void Vector::normolize()
+void VectorKernel::normolize()
 {
     double length = std::sqrt(getLenSq());
 

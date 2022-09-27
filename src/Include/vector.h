@@ -6,10 +6,6 @@
 #include <istream>
 #include "basis.h"
 
-
-class Vector
-{
-private:
 class VectorKernel
 {
 private:
@@ -29,10 +25,16 @@ public:
     double setX  (double x);
     double setY  (double y);
     double setZ  (double z);
-    
-    void setLen(double length) { length_ = length; }
 
+    const VectorKernel & operator=(const VectorKernel &ker);
+    
+    const VectorKernel & operator+=(const VectorKernel &arg);
+    const VectorKernel & operator-=(const VectorKernel &arg);
+    const VectorKernel & operator*=(double coef); 
+
+    
     void rotate(double angle);
+    void normolize();
 
     double getLenSq() 
     {
@@ -41,34 +43,32 @@ public:
 
         return length_;
     }
-} Kernel;
+};
+
+class Vector
+{
+private:
+    VectorKernel Kernel;
 
 public:
     Vector(double x = 0, double y = 0, double z = 0) : 
            Kernel(x, y, z) {}
 
-    Vector(const Vector &&vec)
-    {
-        Kernel.setX(vec.getX());
-        Kernel.setY(vec.getY());
-        Kernel.setZ(vec.getZ());
-    }
-    Vector(const Vector &vec)
-    {
-        Kernel.setX(vec.getX());
-        Kernel.setY(vec.getY());
-        Kernel.setZ(vec.getZ());
-    }
-
+    Vector(const Vector &&vec) { Kernel = vec.Kernel; }
+    Vector(const Vector &vec)  { Kernel = vec.Kernel; }
 
     double getX() const { return Kernel.getX(); }
     double getY() const { return Kernel.getY(); }
     double getZ() const { return Kernel.getZ(); }
 
-    double getLenSq() { return Kernel.getLenSq(); }
+    double setX(double x) { return Kernel.setX(x); }
+    double setY(double y) { return Kernel.setY(y); }
+    double setZ(double z) { return Kernel.setZ(z); }
 
-    void normolize();
-    void rotate(double angle) { return Kernel.rotate(angle); };
+    double getLenSq()           { return Kernel.getLenSq(); }
+    void   normolize()          { return Kernel.normolize(); }
+    void   rotate(double angle) { return Kernel.rotate(angle); };
+
     double getAngle(Vector &vec);
 
     friend Vector operator*(double coef, const Vector &vec);
@@ -80,120 +80,119 @@ public:
            Vector   operator-(const Vector &vec);
            Vector   operator&(const Vector &vec);
            Vector   operator%(const Vector &vec);
-           Vector   operator/(double coef);
            Vector   operator*(double coef);
-           Vector   operator-();
+           Vector   operator/(double coef) { return this->operator*(1 / coef); }
+           Vector   operator-() { return (-1) * (*this); }
 
     double operator*(const Vector &arg);
 
-    explicit operator double() const { return std::sqrt(x_*x_ + y_*y_ + z_*z_); }
-    void operator+=(const Vector &arg);
-    void operator-=(const Vector &arg);
-    void operator*=(double coef); 
+    explicit operator double() const { return std::sqrt(Kernel.getX() * Kernel.getX() 
+                                                   + Kernel.getY() * Kernel.getY() 
+                                                   + Kernel.getZ() * Kernel.getZ()); }
+    void operator+=(const Vector &arg) { Kernel += arg.Kernel; }
+    void operator-=(const Vector &arg) { Kernel -= arg.Kernel; }
+    void operator*=(double coef)       { Kernel *= coef; } 
 };
 
 
-inline const Vector & Vector::operator=(const Vector &&vec)
+inline const VectorKernel & VectorKernel::operator=(const VectorKernel &ker)
 {
-    Kernel.setX(vec.getX());
-    Kernel.setY(vec.getY());
-    Kernel.setZ(vec.getZ());
+    x_ = ker.x_;
+    y_ = ker.y_;
+    z_ = ker.z_;
 
-    return *this;
+    length_ = ker.length_;
+
+    return *this; 
 }
 
-inline const Vector & Vector::operator=(const Vector &vec)
+inline const VectorKernel & VectorKernel::operator+=(const VectorKernel &ker)
 {
-    Kernel.setX(vec.getX());
-    Kernel.setY(vec.getY());
-    Kernel.setZ(vec.getZ());
-
-    return *this;
-}
-
-inline Vector Vector::operator*(double coef)
-{
-    return Vector(getX() * coef, getY() * coef, getZ() * coef);
-}
-
-inline double Vector::operator*(const Vector &vec)
-{
-    return (getX() * vec.getY() + getY() * vec.getY() + getZ() * vec.getZ());
-}
-
-
-inline Vector operator*(double coef, const Vector &vec)
-{
-    return Vector(vec.x_ * coef, vec.y_ * coef, vec.z_ * coef);
-}
-
-inline Vector Vector::operator+(const Vector &arg)
-{
-    return Vector(x_ + arg.x_, y_ + arg.y_, z_ + arg.z_);
-}
-
-inline void Vector::operator+=(const Vector &arg)
-{
-    double old_x = x_,
-           old_y = y_,
-           old_z = z_;
-
-    x_ += arg.x_;
-    y_ += arg.y_;
-    z_ += arg.z_;
+    x_ += ker.x_;
+    y_ += ker.y_;
+    z_ += ker.z_;
 
     length_ = -1;
+
+    return *this; 
 }
 
-inline Vector Vector::operator-(const Vector &arg)
+inline const VectorKernel & VectorKernel::operator-=(const VectorKernel &ker)
 {
-    return Vector(x_ - arg.x_, y_ - arg.y_, z_ - arg.z_);
-}
-
-inline Vector Vector::operator-()
-{
-    return (-1) * (*this);
-}
-
-inline Vector Vector::operator&(const Vector &vec)
-{
-    double x2 = vec.x_,
-           y2 = vec.y_,
-           z2 = vec.z_; 
-    
-    return Vector(y_ * z2 - z_ * y2, z_ * x2 - x_ * z2, x_ * y2 - y_ * x2);
-}
-
-inline Vector Vector::operator%(const Vector &vec)
-{
-    return Vector(x_ * vec.x_, y_ * vec.y_, z_ * vec.z_);
-}
-
-inline void Vector::operator-=(const Vector &arg)
-{
-    double old_x = x_,
-           old_y = y_,
-           old_z = z_;
-
-    x_ -= arg.x_;
-    y_ -= arg.y_;
-    z_ -= arg.z_;
+    x_ -= ker.x_;
+    y_ -= ker.y_;
+    z_ -= ker.z_;
 
     length_ = -1;
+
+    return *this; 
 }
 
-inline Vector Vector::operator/(double coef)
-{
-    return this->operator*(1 / coef);
-}
-
-inline void Vector::operator*=(double coef)
+inline const VectorKernel & VectorKernel::operator*=(double coef)
 {
     x_ *= coef;
     y_ *= coef;
     z_ *= coef;
 
     length_ = -1;
+
+    return *this; 
 }
 
+inline const Vector & Vector::operator=(const Vector &&vec)
+{
+    Kernel = vec.Kernel;
+    return *this;
+}
+
+inline const Vector & Vector::operator=(const Vector &vec)
+{
+    Kernel = vec.Kernel;
+    return *this;
+}
+
+inline Vector Vector::operator*(double coef)
+{
+    return Vector(Kernel.getX() * coef, Kernel.getY() * coef, Kernel.getZ() * coef);
+}
+
+inline double Vector::operator*(const Vector &vec)
+{
+    return (Kernel.getX() * vec.Kernel.getX() + Kernel.getY() * vec.Kernel.getY() 
+            + Kernel.getZ() * vec.Kernel.getZ());
+}
+
+
+inline Vector operator*(double coef, const Vector &vec)
+{
+    return Vector(vec.Kernel.getX() * coef, vec.Kernel.getY() * coef, vec.Kernel.getZ() * coef);
+}
+
+inline Vector Vector::operator+(const Vector &arg)
+{
+    return Vector(Kernel.getX() + arg.Kernel.getX(), Kernel.getY() + arg.Kernel.getY(),
+                  Kernel.getZ() + arg.Kernel.getZ());
+}
+
+inline Vector Vector::operator-(const Vector &arg)
+{
+    return Vector(Kernel.getX() - arg.Kernel.getX(), Kernel.getY() - arg.Kernel.getY(),
+                  Kernel.getZ() - arg.Kernel.getZ());
+}
+
+// Vector multiplication
+inline Vector Vector::operator&(const Vector &vec)
+{
+    double x1 = Kernel.getX(), x2 = vec.Kernel.getX(),
+           y1 = Kernel.getY(), y2 = vec.Kernel.getY(),
+           z1 = Kernel.getZ(), z2 = vec.Kernel.getZ(); 
+    
+    return Vector(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2);
+}
+
+inline Vector Vector::operator%(const Vector &vec)
+{
+    return Vector(Kernel.getX() * vec.Kernel.getX(), Kernel.getY() * vec.Kernel.getY(),
+                  Kernel.getZ() * vec.Kernel.getZ());
+}
 #endif
