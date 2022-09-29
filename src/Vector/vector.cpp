@@ -67,3 +67,11 @@ void VectorKernel::normolize()
     y_ /= length;
     z_ /= length;
 }
+
+bool IsEqDoubles(double a, double b) { return std::fabs(a - b) < 1e-4; }
+
+bool Vector::operator==(const Vector &vec) const
+{
+    return IsEqDoubles(getX(), vec.getX()) && IsEqDoubles(getY(), vec.getY()) &&
+           IsEqDoubles(getZ(), vec.getZ());
+} 

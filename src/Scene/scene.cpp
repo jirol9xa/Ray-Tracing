@@ -2,41 +2,54 @@
 #include "sphere.h"
 
 // remove after debug
-#include  <iostream>
+#include <iostream>
+#include <cmath>
 
 Vector Scene::processLight(Line &Ray)
 {
-    double coef = 1;
+    double Coef       = 1;
+    bool   IsIntersec = false;
 
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 8; ++i)
     {
+        // We need to know which objects does Ray intersect        
         int status = RayStatuses::NO_INTERSEC;
         for (auto &Figure : Figures_)
         {
-            status = Figure->tryObject(Ray, coef);
-            coef  *= Figure->getMirroring();
-            
-            if (status == RayStatuses::INTERSEC_LIGHT)
-                return Ray.Color_;
-            // We need to know which objects does Ray intersect        
+            status = Figure->tryObject(Ray, Coef);
+
+            if (status != RayStatuses::NO_INTERSEC)
+            {
+                IsIntersec = true;
+                Coef      *= Figure->getMirroring();
+
+                if (status == RayStatuses::INTERSEC_LIGHT)
+                    return Ray.Color_;
+
+                break;
+            }
         }
 
         // If ray does not intersect any object, just end cycle
-        if (status == NO_INTERSEC)
+        if (status == RayStatuses::NO_INTERSEC)
             return {0, 0, 0};
     }
+
+    if (!Ray.IsCatchLightSourse)
+        return {0, 0, 0};
 
     return Ray.Color_;
 }
 
 void normolizeColor(Vector &Color)
 {
-    if      (Color.getX() > 255) Color.setX(255);
-    else if (Color.getX() < 0)   Color.setX(0);
-    if      (Color.getY() > 255) Color.setY(255);
-    else if (Color.getY() < 0)   Color.setY(0);
-    if      (Color.getZ() > 255) Color.setZ(255);
-    else if (Color.getZ() < 0)   Color.setZ(0);
+    
+    if      (Color.getX() > 1) Color.setX(1);
+    else if (Color.getX() < 0) Color.setX(0);
+    if      (Color.getY() > 1) Color.setY(1);
+    else if (Color.getY() < 0) Color.setY(0);
+    if      (Color.getZ() > 1) Color.setZ(1);
+    else if (Color.getZ() < 0) Color.setZ(0);
 }
 
 uint32_t * Scene::drawScene()
@@ -54,8 +67,8 @@ uint32_t * Scene::drawScene()
 
             normolizeColor(Color);
 
-            Pixels_[x] = Pixels_[x] = 0xFF000000 + (int(Color.getX()) << 16) + 
-                         (int(Color.getY()) << 8) + int(Color.getZ());
+            Pixels_[x] = Pixels_[x] = 0xFF000000 + (int(Color.getX() * 255) << 16) + 
+                         (int(Color.getY() * 255) << 8) + int(Color.getZ() * 255);
         }
 
     Pixels_ -= Width * Heigth;

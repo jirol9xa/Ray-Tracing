@@ -76,13 +76,16 @@ public:
 
     const  Vector & operator=(const Vector &&vec);
     const  Vector & operator=(const Vector &vec);
-           Vector   operator+(const Vector &vec);
-           Vector   operator-(const Vector &vec);
-           Vector   operator&(const Vector &vec);
-           Vector   operator%(const Vector &vec);
-           Vector   operator*(double coef);
-           Vector   operator/(double coef) { return this->operator*(1 / coef); }
-           Vector   operator-() { return (-1) * (*this); }
+           Vector   operator+(const Vector &vec) const;
+           Vector   operator-(const Vector &vec) const;
+           Vector   operator&(const Vector &vec) const;
+           Vector   operator%(const Vector &vec) const;
+           Vector   operator*(double coef) const;
+           Vector   operator/(double coef) const { return this->operator*(1 / coef); }
+           Vector   operator-() const { return (-1) * (*this); }
+
+    bool operator==(const Vector &vec) const;
+    bool operator!=(const Vector &vec) const { return !(*this == vec); } 
 
     double operator*(const Vector &arg) const;
     double operator^(Vector &arg) { return getAngle(arg); }
@@ -152,7 +155,7 @@ inline const Vector & Vector::operator=(const Vector &vec)
     return *this;
 }
 
-inline Vector Vector::operator*(double coef)
+inline Vector Vector::operator*(double coef) const
 {
     return Vector(Kernel.getX() * coef, Kernel.getY() * coef, Kernel.getZ() * coef);
 }
@@ -169,20 +172,20 @@ inline Vector operator*(double coef, const Vector &vec)
     return Vector(vec.Kernel.getX() * coef, vec.Kernel.getY() * coef, vec.Kernel.getZ() * coef);
 }
 
-inline Vector Vector::operator+(const Vector &arg)
+inline Vector Vector::operator+(const Vector &arg) const
 {
     return Vector(Kernel.getX() + arg.Kernel.getX(), Kernel.getY() + arg.Kernel.getY(),
                   Kernel.getZ() + arg.Kernel.getZ());
 }
 
-inline Vector Vector::operator-(const Vector &arg)
+inline Vector Vector::operator-(const Vector &arg) const
 {
     return Vector(Kernel.getX() - arg.Kernel.getX(), Kernel.getY() - arg.Kernel.getY(),
                   Kernel.getZ() - arg.Kernel.getZ());
 }
 
 // Vector multiplication
-inline Vector Vector::operator&(const Vector &vec)
+inline Vector Vector::operator&(const Vector &vec) const
 {
     double x1 = Kernel.getX(), x2 = vec.Kernel.getX(),
            y1 = Kernel.getY(), y2 = vec.Kernel.getY(),
@@ -192,7 +195,7 @@ inline Vector Vector::operator&(const Vector &vec)
 }
 
 // Component multiplication
-inline Vector Vector::operator%(const Vector &vec)
+inline Vector Vector::operator%(const Vector &vec) const
 {
     return Vector(Kernel.getX() * vec.Kernel.getX(), Kernel.getY() * vec.Kernel.getY(),
                   Kernel.getZ() * vec.Kernel.getZ());

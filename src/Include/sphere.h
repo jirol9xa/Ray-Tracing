@@ -12,7 +12,7 @@ public:
     Sphere(double x, double y, double z, double r) : Figure(x, y, z), Radius_(r)  {}
 
     void setColor(const Vector &vec) { Color_ = vec; }
-    void setMirroring(double coef)   { mirroring_ = coef; }
+    void setMirroring(double coef)   { Mirroring_ = coef; }
 
     virtual int          tryObject  (Line &ray, double coef);
     virtual const Vector getIntersec(Line &Ray);
