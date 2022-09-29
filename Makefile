@@ -5,8 +5,8 @@ SFML_FLAGS 	= -lsfml-graphics -lsfml-window -lsfml-system
 DEBUG_FLAGS = -Wall -Wextra -Wpedantic -fsanitize=address,leak
 
 
-all: main.o vector.o render.o sphere.o
-	$(CC) main.o vector.o render.o sphere.o -o test $(SFML_FLAGS) $(DEBUG_FLAGS)
+all: main.o vector.o render.o sphere.o scene.o
+	$(CC) main.o vector.o render.o sphere.o scene.o -o test $(SFML_FLAGS) $(DEBUG_FLAGS)
 clear:
 	rm -rf *.o
 
@@ -18,3 +18,5 @@ render.o:	src/Render/render.cpp
 	$(CC) $(C_FLAG) src/Render/render.cpp -o render.o	$(I_FLAG)	-g
 sphere.o:	src/Sphere/sphere.cpp
 	$(CC) $(C_FLAG) src/Sphere/sphere.cpp -o sphere.o	$(I_FLAG)	-g
+scene.o:	src/Scene/scene.cpp
+	$(CC) $(C_FLAG) src/Scene/scene.cpp   -o scene.o 	$(I_FLAG)	-g

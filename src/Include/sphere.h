@@ -2,34 +2,22 @@
 #define SPHERE_H
 
 #include "vector.h"
+#include "figure.h"
 
-class Sphere
-{
+class Sphere: public Figure
+{ 
 private:
-    uint32_t *Pixels_;
-    int Radius_;
-    Vector Color_;
+    double Radius_;
 public:
-    Sphere(uint32_t *Pixels, int radius = 50) : 
-        Pixels_(Pixels), Radius_(radius)
-    {
-        Color_ = {255, 255, 255};
-    } 
-    Sphere(int radius = 50) : Radius_(radius) 
-    { 
-        Color_ = {255, 255, 255};
-        Pixels_ = new uint32_t[Settings::Width * Settings::Heigth];
-    
-    }
-    ~Sphere() { delete [] Pixels_; }
+    Sphere(double x, double y, double z, double r) : Figure(x, y, z), Radius_(r)  {}
 
-    void makeSphere(Basis &basis, const Vector &Lamp, const Vector &View);
-    void setColor(const Vector &vec);
-    const uint32_t *getPixels() { return Pixels_; }
+    void setColor(const Vector &vec) { Color_ = vec; }
+    void setMirroring(double coef)   { mirroring_ = coef; }
 
-private:
-    Vector makeNormal(double x, double y, double z, Basis basis);
-    void   makePositiveVec(Vector &vec);
+    virtual int          tryObject  (Line &ray, double coef);
+    virtual const Vector getIntersec(Line &Ray);
+
+    Vector makeNormal(const Vector &vec);
 };
 
-#endif
+#endif 

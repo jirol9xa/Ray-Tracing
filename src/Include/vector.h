@@ -72,7 +72,7 @@ public:
     double getAngle(Vector &vec);
 
     friend Vector operator*(double coef, const Vector &vec);
-    friend std::ostream & operator<<(std::ostream &os, const Vector &vec);
+    friend std::ostream & operator<<(std::ostream &os, Vector &vec);
 
     const  Vector & operator=(const Vector &&vec);
     const  Vector & operator=(const Vector &vec);
@@ -84,7 +84,8 @@ public:
            Vector   operator/(double coef) { return this->operator*(1 / coef); }
            Vector   operator-() { return (-1) * (*this); }
 
-    double operator*(const Vector &arg);
+    double operator*(const Vector &arg) const;
+    double operator^(Vector &arg) { return getAngle(arg); }
 
     explicit operator double() const { return std::sqrt(Kernel.getX() * Kernel.getX() 
                                                    + Kernel.getY() * Kernel.getY() 
@@ -156,7 +157,7 @@ inline Vector Vector::operator*(double coef)
     return Vector(Kernel.getX() * coef, Kernel.getY() * coef, Kernel.getZ() * coef);
 }
 
-inline double Vector::operator*(const Vector &vec)
+inline double Vector::operator*(const Vector &vec) const
 {
     return (Kernel.getX() * vec.Kernel.getX() + Kernel.getY() * vec.Kernel.getY() 
             + Kernel.getZ() * vec.Kernel.getZ());
@@ -190,6 +191,7 @@ inline Vector Vector::operator&(const Vector &vec)
     return Vector(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2);
 }
 
+// Component multiplication
 inline Vector Vector::operator%(const Vector &vec)
 {
     return Vector(Kernel.getX() * vec.Kernel.getX(), Kernel.getY() * vec.Kernel.getY(),

@@ -1,85 +1,83 @@
-#include <cmath>
-#include <iostream>
 #include "sphere.h"
+#include <cmath>
 
-void Sphere::makeSphere(Basis &basis, const Vector &Lamp, const Vector &View)
+// Delete after debug
+#include <iostream>
+
+int Sphere::tryObject(Line &Ray, double coef)
 {
-    using namespace Settings;
+    // Need to calculate point of intersection of sphere and Ray
+    Vector IntersecPoint = getIntersec(Ray);
+    if (IntersecPoint.getX() == 0 && IntersecPoint.getY() == 0 &&
+        IntersecPoint.getZ() == 0)
+        return RayStatuses::NO_INTERSEC;
 
-    const int X0    = basis.getX(),
-              Y0    = basis.getY(),
-              Z0    = basis.getZ(),
-              Scale = basis.getScale();
+    Vector Normal = makeNormal(IntersecPoint);
     
-    long Rad = Radius_ * Radius_ * Scale;
+    double Direct_Normal_Angl = Ray.Direct_ ^ Normal;
+
+    Ray.Direct_     = 2 * (Ray.Direct_ ^ Normal) * Normal - Ray.Direct_; // Ray = ReflectedRay
+    Ray.StartPoint_ = IntersecPoint;
     
-    Vector View_l = View;
-    View_l *= Scale;
-    Vector Light = Lamp;
-    Light *= Scale;
-    Vector LightColor(0xCB, 0xC0, 0xFF);
+    if (isLightSrc_)
+    {
+        Ray.Color_ = coef * (Ray.Color_ % Color_);// * Direct_Normal_Angl;
+        return RayStatuses::INTERSEC_LIGHT;   
+    }
 
-    for (int y = 0; y < Heigth; ++y, Pixels_ += Width)
-        for (int x = 0; x < Width; ++x)
-        {
-            if (((x - X0) * (x - X0) + (y - Y0) * (y - Y0)) > Rad)
-                continue;
-
-            double z = std::sqrt(Rad - (x - X0) * (x - X0) - (y - Y0) * (y - Y0));
-
-            Vector Normal = makeNormal(x, y, z, basis);     // Normal Vector for (x,y,z)
-            Vector Ray(Light.getX()  - x, Light.getY()  - y, Light.getZ()  - z);
-            Vector Eye(View_l.getX() - x, View_l.getY() - y, View_l.getZ() - z);
-            Vector Color;
-
-            double FiAngle = Ray.getAngle(Normal);
-            if (FiAngle < 0)
-                FiAngle = 0;
-
-            Vector ReflectedRay =  2 * FiAngle * Normal - Ray;
-
-            double AlAngle = ReflectedRay.getAngle(Eye);
-            if (AlAngle < 0)
-                AlAngle = 0;
-
-            Color = ((LightColor % Color_  * ((FiAngle * 0.8  +  0.2)) / 255) +
-                      LightColor * std::pow(AlAngle, 25) * 5) / 255; 
-
-            if      (Color.getX() > 1) Color.setX(1);
-            else if (Color.getX() < 0) Color.setX(0);
-            if      (Color.getY() > 1) Color.setY(1);
-            else if (Color.getY() < 0) Color.setY(0);
-            if      (Color.getZ() > 1) Color.setZ(1);
-            else if (Color.getZ() < 0) Color.setZ(0);
-
-            Pixels_[x] = 0xFF000000 + (int(Color.getX() * 255.0) << 16) + 
-                        (int(Color.getY() * 255.0) << 8) + int(Color.getZ() * 255.0);           
-        }
-
-    Pixels_ -= Width * Heigth;
+    return RayStatuses::INTERSEC;
 }
 
-Vector Sphere::makeNormal(double x, double y, double z, Basis basis)
+const Vector Sphere::getIntersec(Line &Ray)
 {
-    return Vector(x - basis.getX(), y - basis.getY(), z - basis.getZ());
+    Vector S = Center_ - Ray.StartPoint_;
+
+    double a = Ray.Direct_ * Ray.Direct_,
+           b = -2 * Ray.Direct_ * S,
+           c =  S * S - Radius_ * Radius_;
+
+    double Diskr = b * b - 4 * a * c;
+    if (Diskr < 0)
+        return {0, 0, 0};
+    
+    double SqrtDiskr = std::sqrt(Diskr);
+    double root1 = (-b + SqrtDiskr) / (2 * a),
+           root2 = (-b - SqrtDiskr) / (2 * a);
+    
+    double root;
+    if (root1 < root2 && root1 > 0)
+        root = root1;
+    else if (root2 > 0)
+        root = root2;
+    else 
+        return {0, 0, 0};
+
+    // Vector S = Center_ - Ray.StartPoint_;
+
+    // double Direct_S     = Ray.Direct_ * S;
+    // double Direct_LenSq = Ray.Direct_.getLenSq();
+    // double Diskr        = Direct_S * Direct_S - Direct_LenSq * 
+    //                       (S.getLenSq() - Radius_ * Radius_);
+
+    // if (Diskr < 0)
+    //     return {0, 0, 0};
+
+    // double sqrt_diskr = std::sqrt(Diskr);
+    // double root1      = (Direct_S + sqrt_diskr) / Direct_LenSq,
+    //        root2      = (Direct_S - sqrt_diskr) / Direct_LenSq;
+    // double root;
+    // if (root1 < root2 && root1 > 0)
+    //     root = root1;
+    // else if (root2 > 0)
+    //     root = root2;
+    // else 
+    //     return {0, 0, 0};
+
+    return Ray.Direct_ * root + Ray.StartPoint_;
 }
 
-void Sphere::makePositiveVec(Vector &vec)
+Vector Sphere::makeNormal(const Vector &vec)
 {
-    double Coord = vec.getX();
-    if (Coord < 0)
-        vec.setX(-Coord);
-
-    Coord = vec.getY();
-    if (Coord < 0)
-        vec.setY(Coord);
-
-    Coord = vec.getZ();
-    if (Coord < 0)
-        vec.setZ(Coord);
-}
-
-void Sphere::setColor(const Vector &vec)
-{
-    Color_ = vec;
+    return Vector(vec.getX() - Center_.getX(), vec.getY() - Center_.getY(),
+                  vec.getZ() - Center_.getZ());
 }

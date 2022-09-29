@@ -59,7 +59,6 @@ std::ostream & operator<<(std::ostream &os, Vector &vec)
     return os;
 }
 
-
 void VectorKernel::normolize()
 {
     double length = std::sqrt(getLenSq());
