@@ -10,7 +10,7 @@ Vector Scene::processLight(Line &Ray)
     double Coef       = 1;
     bool   IsIntersec = false;
 
-    [&]() mutable -> void
+    auto Func = [&](Line &Ray)
     {
     for (int i = 0; i < 4; ++i)
     {
@@ -26,7 +26,7 @@ Vector Scene::processLight(Line &Ray)
                 Coef      *= Figure->getMirroring();
 
                 if (status == RayStatuses::INTERSEC_LIGHT)
-                    return; //return Ray.Color_;
+                    return;
 
                 break;
             }
@@ -35,13 +35,13 @@ Vector Scene::processLight(Line &Ray)
         // and draw it into sky color
         if (status == RayStatuses::NO_INTERSEC)
         {
-            //return SkyBox_;
             Ray.Color_ = SkyBox_;
             return;
         }
     }
     };
-    
+
+    Func(Ray);
 
     return Ray.Color_;
 }
