@@ -26,8 +26,9 @@ int Sphere::tryObject(Line &Ray, double coef)
     if (IsLightSrc_)
     {        
         Ray.IsCatchLightSourse = true;
-        Ray.Color_ = coef * ((Ray.Color_ % Color_) * (-DirectNormalAngl + 0.002) +
-                 Color_ * (std::pow(-ReflectedStartPnt, 15) * 5));
+        Ray.Color_ = coef * ((Ray.Color_ % Color_) * (-DirectNormalAngl + 0.002));// +
+                 //Color_ * (std::pow(-ReflectedStartPnt, 15) * 5));
+        
         return RayStatuses::INTERSEC_LIGHT;   
     }
 

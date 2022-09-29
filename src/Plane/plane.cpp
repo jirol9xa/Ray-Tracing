@@ -1,5 +1,8 @@
 #include "plane.h"
 
+// Delete after debug
+#include <iostream>
+
 int Plane::tryObject(Line &Ray, double coef)
 {
     Vector Intersec = getIntersec(Ray);
@@ -26,9 +29,9 @@ int Plane::tryObject(Line &Ray, double coef)
         
         Ray.IsCatchLightSourse = true;
         Ray.Color_ = coef * ((Ray.Color_ % Color_) * LightIntens_ * 
-                 (-DirectNormalAngl + 0.8) + Color_ * 
-                 (std::pow(-RefVecSrttPntAngl, 15) * 5));
-        
+                 (-DirectNormalAngl + 0.8));// + Color_ * 
+                 //(std::pow(-RefVecSrttPntAngl, 15) * 5));
+
         return RayStatuses::INTERSEC_LIGHT;        
     }
 
@@ -44,7 +47,7 @@ const Vector Plane::getIntersec(Line &Ray)
                  Normal_Strt_Pnt.getZ() + D_) / (Normal_Direct.getX() + 
                  Normal_Direct.getY() + Normal_Direct.getZ());
 
-    if (t >= 0)
+    if (t > 0)
         return Ray.StartPoint_ + Ray.Direct_ * t;
     else
         return Ray.StartPoint_;

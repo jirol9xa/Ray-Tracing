@@ -31,10 +31,11 @@ int main() {
 
     plane1.setLightSrc(true);
     plane1.setLightInt(0.4);
+    // plane1.setColor({0, 0, 1});
 
     // plane2.setLightSrc(true);
     plane2.setLightInt(0.4);
-    plane2.setColor({0.3, 0, 0.3});
+    plane2.setColor({0.3, 0, 0});
 
     Scene scene(Eye, basis);
 

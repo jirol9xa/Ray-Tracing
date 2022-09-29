@@ -10,7 +10,9 @@ Vector Scene::processLight(Line &Ray)
     double Coef       = 1;
     bool   IsIntersec = false;
 
-    for (int i = 0; i < 8; ++i)
+    [&]() mutable -> void
+    {
+    for (int i = 0; i < 4; ++i)
     {
         // We need to know which objects does Ray intersect        
         int status = RayStatuses::NO_INTERSEC;
@@ -24,26 +26,28 @@ Vector Scene::processLight(Line &Ray)
                 Coef      *= Figure->getMirroring();
 
                 if (status == RayStatuses::INTERSEC_LIGHT)
-                    return Ray.Color_;
+                    return; //return Ray.Color_;
 
                 break;
             }
         }
-
         // If ray does not intersect any object, just end cycle
+        // and draw it into sky color
         if (status == RayStatuses::NO_INTERSEC)
-            return {0, 0, 0};
+        {
+            //return SkyBox_;
+            Ray.Color_ = SkyBox_;
+            return;
+        }
     }
-
-    if (!Ray.IsCatchLightSourse)
-        return {0, 0, 0};
+    };
+    
 
     return Ray.Color_;
 }
 
 void normolizeColor(Vector &Color)
 {
-    
     if      (Color.getX() > 1) Color.setX(1);
     else if (Color.getX() < 0) Color.setX(0);
     if      (Color.getY() > 1) Color.setY(1);
@@ -67,8 +71,8 @@ uint32_t * Scene::drawScene()
 
             normolizeColor(Color);
 
-            Pixels_[x] = Pixels_[x] = 0xFF000000 + (int(Color.getX() * 255) << 16) + 
-                         (int(Color.getY() * 255) << 8) + int(Color.getZ() * 255);
+            Pixels_[x] = Pixels_[x] = 0xFF000000 + (int(Color.getZ() * 255) << 16) + 
+                         (int(Color.getY() * 255) << 8) + int(Color.getX() * 255);
         }
 
     Pixels_ -= Width * Heigth;
