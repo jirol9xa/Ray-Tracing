@@ -10,39 +10,38 @@ Vector Scene::processLight(Line &Ray)
     double Coef       = 1;
     bool   IsIntersec = false;
 
-    auto Func = [&](Line &Ray)
+    // Lambda added for escaping nested cycles without goto
+    [&]() 
     {
-    for (int i = 0; i < 4; ++i)
-    {
-        // We need to know which objects does Ray intersect        
-        int status = RayStatuses::NO_INTERSEC;
-        for (auto &Figure : Figures_)
+        for (int i = 0; i < 4; ++i)
         {
-            status = Figure->tryObject(Ray, Coef);
-
-            if (status != RayStatuses::NO_INTERSEC)
+            // We need to know which objects does Ray intersect        
+            int status = RayStatuses::NO_INTERSEC;
+            for (auto &Figure : Figures_)
             {
-                IsIntersec = true;
-                Coef      *= Figure->getMirroring();
+                status = Figure->tryObject(Ray, Coef);
 
-                if (status == RayStatuses::INTERSEC_LIGHT)
-                    return;
+                if (status != RayStatuses::NO_INTERSEC)
+                {
+                    IsIntersec = true;
+                    Coef      *= Figure->getMirroring();
 
-                break;
+                    if (status == RayStatuses::INTERSEC_LIGHT)
+                        return;
+
+                    break;
+                }
+            }
+            // If ray does not intersect any object, just end cycle
+            // and draw it into sky color
+            if (status == RayStatuses::NO_INTERSEC)
+            {
+                Ray.Color_ = SkyBox_;
+                return;
             }
         }
-        // If ray does not intersect any object, just end cycle
-        // and draw it into sky color
-        if (status == RayStatuses::NO_INTERSEC)
-        {
-            Ray.Color_ = SkyBox_;
-            return;
-        }
-    }
-    };
-
-    Func(Ray);
-
+    }();
+    
     return Ray.Color_;
 }
 
