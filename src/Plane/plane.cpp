@@ -8,8 +8,7 @@ int Plane::tryObject(Line &Ray, double coef)
     Vector Intersec = getIntersec(Ray);
     if (Ray.StartPoint_ != Intersec)
     {
-        Vector ReflectRay = Ray.Direct_ - 2 * Normal_ *
-                            (Ray.Direct_ * Normal_) / std::sqrt(Normal_.getLenSq());
+        Vector ReflectRay = Ray.Direct_ - 2 * Normal_ * (Ray.Direct_ * Normal_) / Normal_.getLenSq();
 
         if (!IsLightSrc_)
         {

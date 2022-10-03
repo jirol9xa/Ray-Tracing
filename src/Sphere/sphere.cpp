@@ -14,7 +14,7 @@ int Sphere::tryObject(Line &Ray, double coef)
     Vector Normal = makeNormal(IntersecPoint);    
     double DirectNormalAngl = Ray.Direct_ ^ Normal;
 
-    Ray.Direct_ -= 2 * Normal * (Ray.Direct_ * Normal) / std::sqrt(Normal.getLenSq());
+    Ray.Direct_ -= 2 * Normal * (Ray.Direct_ * Normal) / Normal.getLenSq();
     double ReflectedStartPnt = Ray.Direct_ ^ Ray.StartPoint_;
     Ray.StartPoint_ = IntersecPoint;
 
