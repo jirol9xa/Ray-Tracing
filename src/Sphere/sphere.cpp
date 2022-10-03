@@ -18,10 +18,13 @@ int Sphere::tryObject(Line &Ray, double coef)
     double ReflectedStartPnt = Ray.Direct_ ^ Ray.StartPoint_;
     Ray.StartPoint_ = IntersecPoint;
 
-    if (DirectNormalAngl > 0)
-        DirectNormalAngl = 0;
-    if (ReflectedStartPnt > 0)
-        ReflectedStartPnt = 0;
+    // if (DirectNormalAngl > 0)
+    //     DirectNormalAngl = 0;
+    // if (ReflectedStartPnt > 0)
+    //     ReflectedStartPnt = 0;
+
+    DirectNormalAngl  -= DirectNormalAngl  * (DirectNormalAngl  > 0);
+    ReflectedStartPnt -= ReflectedStartPnt * (ReflectedStartPnt > 0);
 
     if (IsLightSrc_)
     {        
