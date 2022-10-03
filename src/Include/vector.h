@@ -60,9 +60,9 @@ public:
     double operator*(const Vector &arg);
 
     explicit operator double() const { return std::sqrt(x_*x_ + y_*y_ + z_*z_); }
-    void operator+=(const Vector &arg);
-    void operator-=(const Vector &arg);
-    void operator*=(double coef); 
+    const Vector & operator+=(const Vector &arg);
+    const Vector & operator-=(const Vector &arg);
+    const Vector & operator*=(double coef); 
 };
 
 
@@ -107,17 +107,14 @@ inline Vector Vector::operator+(const Vector &arg)
     return Vector(x_ + arg.x_, y_ + arg.y_, z_ + arg.z_);
 }
 
-inline void Vector::operator+=(const Vector &arg)
+inline const Vector & Vector::operator+=(const Vector &arg)
 {
-    double old_x = x_,
-           old_y = y_,
-           old_z = z_;
-
     x_ += arg.x_;
     y_ += arg.y_;
     z_ += arg.z_;
 
     length_ = -1;
+    return *this;
 }
 
 inline Vector Vector::operator-(const Vector &arg)
@@ -144,17 +141,15 @@ inline Vector Vector::operator%(const Vector &vec)
     return Vector(x_ * vec.x_, y_ * vec.y_, z_ * vec.z_);
 }
 
-inline void Vector::operator-=(const Vector &arg)
+inline const Vector & Vector::operator-=(const Vector &arg)
 {
-    double old_x = x_,
-           old_y = y_,
-           old_z = z_;
 
     x_ -= arg.x_;
     y_ -= arg.y_;
     z_ -= arg.z_;
 
     length_ = -1;
+    return *this;
 }
 
 inline Vector Vector::operator/(double coef)
@@ -162,13 +157,14 @@ inline Vector Vector::operator/(double coef)
     return this->operator*(1 / coef);
 }
 
-inline void Vector::operator*=(double coef)
+inline const Vector & Vector::operator*=(double coef)
 {
     x_ *= coef;
     y_ *= coef;
     z_ *= coef;
 
     length_ = -1;
+    return *this;
 }
 
 #endif
