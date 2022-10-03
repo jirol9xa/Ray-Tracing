@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include "sphere.h"
@@ -33,17 +34,15 @@ void Sphere::makeSphere(Basis &basis, const Vector &Lamp, const Vector &View)
             Vector Color;
 
             double FiAngle = Ray.getAngle(Normal);
-            if (FiAngle < 0)
-                FiAngle = 0;
+            FiAngle -= FiAngle * (FiAngle < 0);
 
-            Vector ReflectedRay =  2 * FiAngle * Normal - Ray;
+            Vector ReflectedRay =  2 * (Normal * Ray) * Normal / Normal.getLenSq() - Ray;
 
             double AlAngle = ReflectedRay.getAngle(Eye);
-            if (AlAngle < 0)
-                AlAngle = 0;
+            AlAngle -= AlAngle * (AlAngle < 0);
 
             Color = ((LightColor % Color_  * ((FiAngle * 0.8  +  0.2)) / 255) +
-                      LightColor * std::pow(AlAngle, 25) * 5) / 255; 
+                      LightColor * std::pow(AlAngle, 15) * 1) / 255; 
 
             if      (Color.getX() > 1) Color.setX(1);
             else if (Color.getX() < 0) Color.setX(0);
@@ -72,11 +71,11 @@ void Sphere::makePositiveVec(Vector &vec)
 
     Coord = vec.getY();
     if (Coord < 0)
-        vec.setY(Coord);
+        vec.setY(-Coord);
 
     Coord = vec.getZ();
     if (Coord < 0)
-        vec.setZ(Coord);
+        vec.setZ(-Coord);
 }
 
 void Sphere::setColor(const Vector &vec)

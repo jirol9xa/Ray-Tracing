@@ -15,7 +15,7 @@ int main() {
     sphere.setColor({0xCB, 0xC0, 0xFF});
     Basis basis;
     sf::Clock clock;
-    Vector Light(20, 20, 20);
+    Vector Light(20, 20, 15);
     Vector Eye(-20, -20, 15);
 
     while (window.isOpen()) 
