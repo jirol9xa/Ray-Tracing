@@ -7,9 +7,10 @@
 #include "scene.h"
 #include "plane.h"
 
-int main() {
+int main() 
+{
     using namespace Settings;  
-
+    
     sf::RenderWindow window(sf::VideoMode(Width, Heigth), "Vectors");
     Render render(&window);
     Basis basis;
